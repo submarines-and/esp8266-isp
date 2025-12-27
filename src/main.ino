@@ -10,8 +10,7 @@
 //     #define SPI_CLOCK            (128000/6)
 //
 // A clock slow enough for an ATtiny85 @ 1 MHz, is a reasonable default:
-
-#define SPI_CLOCK (1000000 / 6)
+#define SPI_CLOCK (128000 / 6)
 
 // Select hardware or software SPI, depending on SPI clock.
 // Currently only for AVR, for other architectures (Due, Zero,...), hardware SPI
@@ -29,11 +28,10 @@
 
 // The standard pin configuration.
 #ifndef ARDUINO_HOODLOADER2
-
-#define RESET 15    // D8
-#define LED_HB 16   // D0
-#define LED_ERR 5   // D1
-#define LED_PMODE 4 // D2
+#define RESET D4
+// #define LED_HB    9
+// #define LED_ERR   8
+// #define LED_PMODE 7
 
 // Uncomment following line to use the old Uno style wiring
 // (using pin 11, 12 and 13 instead of the SPI header) on Leonardo, Due...
@@ -98,8 +96,8 @@
 // Configure the baud rate:
 
 #define BAUDRATE 19200
-// #define BAUDRATE	115200
-// #define BAUDRATE	1000000
+// #define BAUDRATE 115200
+// #define BAUDRATE 1000000
 
 #define HWVER 2
 #define SWMAJ 1
@@ -114,6 +112,7 @@
 #define CRC_EOP 0x20 // ok it is a space...
 
 void pulse(int pin, int times);
+#define USE_HARDWARE_SPI
 
 #ifdef USE_HARDWARE_SPI
 #include "SPI.h"
@@ -181,12 +180,18 @@ void setup()
 {
     SERIAL.begin(BAUDRATE);
 
+#ifdef LED_PMODE
     pinMode(LED_PMODE, OUTPUT);
     pulse(LED_PMODE, 2);
+#endif
+#ifdef LED_ERR
     pinMode(LED_ERR, OUTPUT);
     pulse(LED_ERR, 2);
+#endif
+#ifdef LED_HB
     pinMode(LED_HB, OUTPUT);
     pulse(LED_HB, 2);
+#endif
 }
 
 int error = 0;
@@ -229,7 +234,7 @@ void heartbeat()
     if (hbval < 32)
         hbdelta = -hbdelta;
     hbval += hbdelta;
-    analogWrite(LED_HB, hbval);
+    // analogWrite(LED_HB, hbval);
 }
 
 static bool rst_active_high;
@@ -242,20 +247,23 @@ void reset_target(bool reset)
 void loop(void)
 {
     // is pmode active?
+#ifdef LED_PMODE
     if (pmode) {
         digitalWrite(LED_PMODE, HIGH);
     }
     else {
         digitalWrite(LED_PMODE, LOW);
     }
+#endif
     // is there an error?
+#ifdef LED_ERR
     if (error) {
         digitalWrite(LED_ERR, HIGH);
     }
     else {
         digitalWrite(LED_ERR, LOW);
     }
-
+#endif
     // light the heartbeat LED
     heartbeat();
     if (SERIAL.available()) {
@@ -290,7 +298,9 @@ void pulse(int pin, int times)
 void prog_lamp(int state)
 {
     if (PROG_FLICKER) {
+#ifdef LED_PMODE
         digitalWrite(LED_PMODE, state);
+#endif
     }
 }
 
