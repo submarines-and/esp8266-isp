@@ -8,6 +8,7 @@ Target: ATTiny85
 For all boards, connect a 10kohm pull-up resistor from attiny pin1 to power rail (see schematics).
 
 ## Feather v2
+https://docs.platformio.org/en/latest/boards/espressif32/adafruit_feather_esp32_v2.html
 
 | Feather V2    | Attiny86 |
 | -------- | ------- |
@@ -26,6 +27,7 @@ For all boards, connect a 10kohm pull-up resistor from attiny pin1 to power rail
 
 
 ## Esp8266
+https://docs.platformio.org/en/latest/boards/espressif8266/esp12e.html
 
 | Esp8266    | Attiny86 |
 | -------- | ------- |
